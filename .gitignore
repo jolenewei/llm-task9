@@ -1,0 +1,22 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Environment
+.env
+
+# VSCode config (optional)
+.vscode/
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs or outputs
+*.log
+
+# Virtual environments (if any)
+.venv/
+env/

@@ -1,0 +1,5 @@
+[
+  {"query": "rule_example(item1, item2).", "expected": "true"},
+  {"query": "related(item1, item2).", "expected": "true"},
+  {"query": "fact(item1).", "expected": "true"}
+]
