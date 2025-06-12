@@ -1,8 +1,13 @@
-fact(item1).
-fact(item2).
-related(item1, item2).
+% Facts and rules about trust and connection
+agent(luna).
+agent(milo).
+agent(nova).
 
-rule_example(X, Y) :- related(X, Y).
+trusts(luna, milo).
+trusts(milo, nova).
 
-respond(Query) :- call(Query), write('true'), nl.
-respond(_) :- write('false'), nl.
+connected(X, Y) :- trusts(X, Y).
+connected(X, Y) :- trusts(Y, X).
+
+verify(Query) :- call(Query), write('true'), nl.
+verify(_) :- write('false'), nl.

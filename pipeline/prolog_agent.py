@@ -1,42 +1,31 @@
 import subprocess
 
 def query_prolog(state):
-    # Get and sanitize input
-    raw_query = state["query"].strip().rstrip(".")
-    wrapped_query = f"respond({raw_query})"
-    
-    print("🧠 Query to Prolog:", wrapped_query)
-
+    query = f"verify({state['query'].rstrip('.')})"
     try:
         result = subprocess.run(
-            ["swipl", "-q", "-f", "kb.pl", "-t", wrapped_query],
+            ["swipl", "-q", "-f", "kb.pl", "-t", query],
             capture_output=True,
             text=True
         )
-
         stdout = result.stdout.strip()
         stderr = result.stderr.strip()
-
-        print("STDOUT:", repr(stdout))
-        print("STDERR:", repr(stderr))
 
         if stdout:
             output = stdout
         elif stderr:
             output = f"[Prolog error] {stderr}"
         else:
-            output = "No output from Prolog."
+            output = "No result from Prolog."
 
     except Exception as e:
-        output = f"[Exception] {e}"
+        output = f"Exception running Prolog: {e}"
 
-    # Return updated state
     return {
         "messages": state["messages"] + [{
             "role": "assistant",
-            "content": output
+            "content": f"🤖 Prolog result: `{output}`"
         }],
         "query": state["query"],
         "context": state["context"]
     }
-

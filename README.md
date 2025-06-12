@@ -1,107 +1,118 @@
-# LangGraph Logic Agent
+# 🔍 LangGraph Prolog Reasoning Agent
 
-This project implements a generalized reasoning system using [LangGraph](https://python.langchain.com/docs/langgraph/) and [Prolog](https://www.swi-prolog.org/), capable of answering symbolic logic queries with the help of:
+This project is a symbolic reasoning pipeline that integrates:
 
-- Retrieval-Augmented Generation (RAG)
-- Prolog inference
-- Chain-of-Thought LLM reasoning
+- **SWI-Prolog** for symbolic logic evaluation  
+- **OpenAI LLMs** (via LangChain) for reasoning and explanation  
+- **LangGraph** to build a reactive graph-based agent  
+- **FAISS + Embeddings** for fact retrieval based on query similarity
 
-Inspired by modular graph-based architectures, this system is **domain-independent** and supports any `.pl` knowledge base.
+## What It Does
 
----
+You can input symbolic logic queries like:
 
-## 🗂️ File Structure
+```prolog
+connected(luna, milo).
+trusts(luna, nova).
+```
+
+The agent will:
+
+1. Retrieve similar facts/rules from a vector database  
+2. Query a Prolog knowledge base (`kb.pl`)  
+3. Generate a natural language explanation using an LLM
+
+## File Structure
 
 ```
-langgraph_logic_agent/
-├── app.py                   # Main LangGraph execution
-├── kb.pl                    # Prolog knowledge base
-├── test_app.py              # Tests for core functionality
+llm-task9/
+├── app.py                  # CLI for querying the logic agent
+├── kb.pl                   # Prolog knowledge base (facts and rules)
+├── test_app.py             # Quick test script
 ├── data/
-│   └── examples.json        # Example queries
-└── pipeline/
-    ├── classifier.py
-    ├── retriever.py
-    ├── prolog_agent.py
-    └── reasoner.py
+│   └── examples.json       # Optional symbolic queries for testing
+├── pipeline/
+│   ├── classifier.py       # (Placeholder) question classifier
+│   ├── retriever.py        # FAISS vector retriever
+│   ├── prolog_agent.py     # Runs Prolog subprocess
+│   └── reasoner.py         # Generates LLM reasoning explanation
+├── .env                    # Set your OpenAI API key here
+├── requirements.txt        # Dependencies
+└── README.md               # This file
 ```
 
----
-
-## Pipeline Flow
-
-```mermaid
-graph TD
-  A[START] --> B[Classify Question]
-  B --> C[Retrieve Context]
-  C --> D[Query Prolog]
-  D --> E[LLM Reasoning (Chain-of-Thought)]
-  E --> F[END]
-```
-
----
-
-## How to Run
+## Setup
 
 ### 1. Install dependencies
 
 ```bash
-pip install langgraph langchain langchain-prolog langchain-openai faiss-cpu
+pip install -r requirements.txt
 ```
 
-> You must also export your OpenAI API key:
+### 2. Install SWI-Prolog
+
+Make sure `swipl` works in your terminal.
+
+You should be able to run:
 
 ```bash
-export OPENAI_API_KEY=your-key-here
+swipl -q -f kb.pl -t "connected(luna, milo)."
 ```
 
-### 2. Start the app
+### 3. Set your OpenAI API Key
+
+Create a `.env` file in the root directory:
+
+```
+OPENAI_API_KEY=sk-...
+```
+
+## Usage
+
+Start the CLI agent:
 
 ```bash
 python app.py
 ```
 
-You'll be prompted for a question, e.g.:
+Then input example queries like:
 
+```prolog
+connected(luna, milo).
+trusts(nova, luna).
+rule_example(luna, milo).
 ```
-User: rule_example(item1, item2).
-AI: true
-```
 
----
-
-## Run Tests
+Or run tests:
 
 ```bash
-pytest test_app.py
+python test_app.py
 ```
 
-This runs:
-- Prolog query validation
-- Retrieval pipeline checks
+## Example `kb.pl`
 
----
+```prolog
+fact(luna).
+fact(milo).
+connected(luna, milo).
+trusts(nova, luna).
 
-## How It Works
+rule_example(X, Y) :- connected(X, Y).
 
-- `app.py`: defines the LangGraph pipeline and execution loop
-- `classifier.py`: placeholder for logic/ranking classification (extendable)
-- `retriever.py`: uses FAISS + embeddings to fetch relevant context
-- `prolog_agent.py`: runs queries against a `.pl` knowledge base
-- `reasoner.py`: uses OpenAI’s LLM for natural language reasoning based on Prolog results
-
----
-
-## Sample Queries
-
-See `data/examples.json`:
-
-```
-[
-  { "query": "rule_example(item1, item2).", "expected": "true" },
-  { "query": "related(item1, item2).", "expected": "true" },
-  { "query": "fact(item1).", "expected": "true" }
-]
+respond(Query) :- call(Query), write('true'), nl.
+respond(_) :- write('false'), nl.
 ```
 
-These queries are domain-agnostic and test symbolic reasoning.
+## requirements.txt - Download before
+
+```
+langchain
+langchain-community
+langchain-openai
+langgraph
+faiss-cpu
+openai
+tiktoken
+python-dotenv
+typing-extensions
+```

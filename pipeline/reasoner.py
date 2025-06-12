@@ -5,14 +5,14 @@ llm = ChatOpenAI()
 
 def reason_with_cot(state):
     context_text = "\n".join(state["context"])
-    prompt = f"""Here are some facts and logic rules:\n{context_text}\n\nBased on the above, answer the query:\n{state["query"]}\nExplain your reasoning."""
+    prompt = f"""Context:\n{context_text}\n\nQuestion: {state["query"]}\n\nPlease explain your answer using reasoning based on the context above."""
 
     response = llm.invoke([HumanMessage(content=prompt)])
 
     return {
         "messages": state["messages"] + [{
             "role": "assistant",
-            "content": str(response.content)
+            "content": f"Reasoning: {response.content}"
         }],
         "query": state["query"],
         "context": state["context"]

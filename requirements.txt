@@ -1,9 +1,9 @@
 langchain
 langchain-community
-langgraph
 langchain-openai
+langgraph
 faiss-cpu
 openai
 tiktoken
-typing-extensions
 python-dotenv
+typing-extensions

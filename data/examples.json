@@ -1,5 +1,20 @@
 [
-  {"query": "rule_example(item1, item2).", "expected": "true"},
-  {"query": "related(item1, item2).", "expected": "true"},
-  {"query": "fact(item1).", "expected": "true"}
+  {
+    "context": [
+      "agent(luna).",
+      "agent(milo).",
+      "trusts(luna, milo).",
+      "connected(X, Y) :- trusts(X, Y)."
+    ],
+    "question": "Is Luna connected to Milo?"
+  },
+  {
+    "context": [
+      "agent(milo).",
+      "agent(nova).",
+      "trusts(milo, nova).",
+      "connected(X, Y) :- trusts(X, Y)."
+    ],
+    "question": "Is Nova connected to Milo?"
+  }
 ]

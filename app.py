@@ -48,7 +48,9 @@ def main():
             if "messages" in step and len(step["messages"]) > prev_len:
                 new_messages = step["messages"][prev_len:]
                 for msg in new_messages:
-                    if isinstance(msg, dict) and msg.get("role") == "assistant":
+                    if hasattr(msg, "content"):
+                        print("AI:", msg.content)
+                    elif isinstance(msg, dict) and msg.get("role") == "assistant":
                         print("AI:", msg["content"])
                 prev_len = len(step["messages"])
 

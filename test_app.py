@@ -1,15 +1,6 @@
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage
+from pipeline.prolog_agent import query_prolog
 
-llm = ChatOpenAI()
-
-def reason_with_cot(state):
-    context_text = "\n".join(state["context"])
-    prompt = f"""Here are some facts and logic rules:\n{context_text}\n\nBased on the above, answer the query:\n{state["query"]}\nExplain your reasoning."""
-
-    response = llm.invoke(prompt)
-
-    return {
-        "messages": state["messages"] + [{"role": "assistant", "content": response.content}],
-        **state
-    }
+def test_prolog_query():
+    state = {"query": "connected(luna, milo).", "context": [], "messages": []}
+    result = query_prolog(state)
+    assert "true" in result["messages"][-1]["content"].lower()
