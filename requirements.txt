@@ -1,6 +1,7 @@
 langchain
+langchain-community
+langgraph
 langchain-openai
-langchain-prolog
 faiss-cpu
 openai
 tiktoken

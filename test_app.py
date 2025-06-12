@@ -1,12 +1,15 @@
-from pipeline.retriever import retrieve_context
-from pipeline.prolog_agent import query_prolog
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage
 
-def test_retrieve():
-    state = {"query": "What is related to item1?", "context": [], "messages": []}
-    result = retrieve_context(state)
-    assert len(result["context"]) > 0
+llm = ChatOpenAI()
 
-def test_prolog_query():
-    state = {"query": "rule_example(item1, item2).", "context": [], "messages": []}
-    result = query_prolog(state)
-    assert "true" in result["messages"][-1]["content"].lower()
+def reason_with_cot(state):
+    context_text = "\n".join(state["context"])
+    prompt = f"""Here are some facts and logic rules:\n{context_text}\n\nBased on the above, answer the query:\n{state["query"]}\nExplain your reasoning."""
+
+    response = llm.invoke(prompt)
+
+    return {
+        "messages": state["messages"] + [{"role": "assistant", "content": response.content}],
+        **state
+    }

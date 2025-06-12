@@ -30,11 +30,28 @@ builder.add_edge("reason", END)
 app = builder.compile()
 
 def main():
+    print("LangGraph Prolog Agent – type 'exit' to quit.")
     while True:
         user_input = input("User: ")
-        state = {"messages": [{"role": "user", "content": user_input}], "query": user_input, "context": []}
+        if user_input.strip().lower() == "exit":
+            print("Exiting...")
+            break
+
+        state = {
+            "messages": [{"role": "user", "content": user_input}],
+            "query": user_input,
+            "context": [],
+        }
+
+        prev_len = 0
         for step in app.stream(state, {}, stream_mode="values"):
-            print("AI:", step["messages"][-1]["content"])
+            if "messages" in step and len(step["messages"]) > prev_len:
+                new_messages = step["messages"][prev_len:]
+                for msg in new_messages:
+                    if isinstance(msg, dict) and msg.get("role") == "assistant":
+                        print("AI:", msg["content"])
+                prev_len = len(step["messages"])
+
 
 if __name__ == "__main__":
     main()
